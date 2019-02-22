@@ -5,3 +5,4 @@
 /bonbeat
 /bonbeat.test
 *.pyc
+/vendor

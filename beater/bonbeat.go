@@ -1,4 +1,4 @@
-package beater
+	package beater
 
 import (
 	"fmt"
@@ -9,6 +9,8 @@ import (
 	"github.com/elastic/beats/libbeat/logp"
 
 	"github.com/lucaslandry/bonbeat/config"
+	"github.com/shirou/gopsutil/mem"
+
 )
 
 // Bonbeat configuration.
@@ -43,24 +45,24 @@ func (bt *Bonbeat) Run(b *beat.Beat) error {
 	}
 
 	ticker := time.NewTicker(bt.config.Period)
-	counter := 1
 	for {
 		select {
 		case <-bt.done:
 			return nil
 		case <-ticker.C:
 		}
+		v, _ := mem.VirtualMemory()
 
 		event := beat.Event{
 			Timestamp: time.Now(),
 			Fields: common.MapStr{
 				"type":    b.Info.Name,
-				"counter": counter,
+				"cpu_used_percent": v.UsedPercent,
 			},
 		}
 		bt.client.Publish(event)
 		logp.Info("Event sent")
-		counter++
+
 	}
 }
 
